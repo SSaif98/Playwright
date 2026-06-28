@@ -1,0 +1,221 @@
+Here are examples of each locator type in Playwright:
+
+---
+
+## 1. `getByRole()`
+
+Best option because it uses accessibility roles and is closest to how users interact with the page.
+
+### HTML
+
+```html
+<button>Login</button>
+```
+
+### Playwright
+
+```javascript
+await page.getByRole('button', { name: 'Login' }).click();
+```
+
+Other examples:
+
+```javascript
+page.getByRole('textbox', { name: 'Username' });
+page.getByRole('link', { name: 'Home' });
+page.getByRole('checkbox', { name: 'Remember me' });
+```
+
+---
+
+## 2. `getByLabel()`
+
+Used for form fields associated with labels.
+
+### HTML
+
+```html
+<label for="email">Email Address</label>
+<input id="email" type="email">
+```
+
+### Playwright
+
+```javascript
+await page.getByLabel('Email Address').fill('test@example.com');
+```
+
+---
+
+## 3. `getByPlaceholder()`
+
+Used when an input has a placeholder.
+
+### HTML
+
+```html
+<input type="text" placeholder="Enter your username">
+```
+
+### Playwright
+
+```javascript
+await page.getByPlaceholder('Enter your username').fill('saif');
+```
+
+---
+
+## 4. `getByText()`
+
+Finds elements by visible text.
+
+### HTML
+
+```html
+<h1>Welcome to Dashboard</h1>
+```
+
+### Playwright
+
+```javascript
+await page.getByText('Welcome to Dashboard').isVisible();
+```
+
+Clicking a link:
+
+```html
+<a href="/profile">Profile</a>
+```
+
+```javascript
+await page.getByText('Profile').click();
+```
+
+---
+
+## 5. `getByTestId()`
+
+Most reliable for automation because it is dedicated for testing.
+
+### HTML
+
+```html
+<button data-testid="login-btn">Login</button>
+```
+
+### Playwright
+
+```javascript
+await page.getByTestId('login-btn').click();
+```
+
+You can configure Playwright to use a different attribute if needed.
+
+---
+
+## 6. CSS Selector
+
+Useful when the element has unique classes, IDs, or attributes.
+
+### HTML
+
+```html
+<button id="loginButton">Login</button>
+```
+
+### Playwright
+
+```javascript
+await page.locator('#loginButton').click();
+```
+
+Other examples:
+
+```javascript
+page.locator('.submit-btn');
+page.locator('input[name="email"]');
+page.locator('button.primary');
+```
+
+---
+
+## 7. XPath (Last Resort)
+
+### HTML
+
+```html
+<button>Login</button>
+```
+
+### Playwright
+
+```javascript
+await page.locator('//button[text()="Login"]').click();
+```
+
+Complex example:
+
+```html
+<table>
+  <tr>
+    <td>John</td>
+    <td><button>Edit</button></td>
+  </tr>
+</table>
+```
+
+```javascript
+await page.locator('//td[text()="John"]/following-sibling::td/button').click();
+```
+
+---
+
+## Real-World Login Page Example
+
+### HTML
+
+```html
+<label>Email</label>
+<input placeholder="Enter Email">
+
+<label>Password</label>
+<input placeholder="Enter Password">
+
+<button data-testid="login-btn">
+  Login
+</button>
+```
+
+### Recommended Playwright Code
+
+```javascript
+await page.getByLabel('Email').fill('test@example.com');
+await page.getByPlaceholder('Enter Password').fill('Password123');
+await page.getByTestId('login-btn').click();
+```
+
+### Priority Order
+
+✅ Prefer:
+
+```javascript
+getByRole()
+getByLabel()
+getByPlaceholder()
+getByText()
+getByTestId()
+```
+
+⚠️ Use only if needed:
+
+```javascript
+locator('css-selector')
+```
+
+❌ Avoid unless no better option exists:
+
+```javascript
+locator('xpath')
+```
+
+A good Playwright test should mostly use **Role, Label, and TestId locators**, with very little CSS and almost no XPath.

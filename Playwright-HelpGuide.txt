@@ -1,0 +1,340 @@
+1- Auto wait capability.
+Page might take time to load, the edit box may not completely load or the button
+may not completely visible, if that is the case, the traditional testing tools might break.
+For example, Selenium, they do not have auto weight capability, you have to explicitly
+code asking to wait until that edit box is showing up or checkbox is showing up.	
+But whereas in playwright, it inbuilt takes care and it will auto weight for you.
+Suppose if we use the click operation it will check the elements visibility, stability, any pending events to complete and enabled.
+Timer will be set globally.
+
+2- Cross-Browser testing
+3- Works on Windows, mac and linux
+4- Multilingual Flexibility
+	> JS, TS, Java, Python and C#(.Net)
+	> Cypress can only work with JS
+
+https://rahulshettyacademy.com/practice
+
+Advance Features:
+	> Tracing and Debugging
+		> Automatic screenshots, video recording and logging
+	> Network interception
+	> Browser context management
+		Playwright can reuse login sessions by copying cookies and storage data from a logged-in browser to a new browser context, 
+		such as an incognito window. 
+		This allows tests to bypass the login page and directly access the dashboard. 
+		By logging in only once and reusing the stored session data across multiple test cases, 
+		browser context management helps reduce test execution time and improves efficiency.
+	> Codegen Tool
+		> Record and play
+	
+
+Install Playwright:
+	> Node.js
+		> Set environment variable: C:\Program Files\nodejs
+	> VS Code
+	> npm init playwright	
+
+Some usefull commands:
+
+What is npx:
+
+	So Npx is the path which will point to the path of your playwright module in the node modules. Okay, so let me close this.
+	So in the node modules you will have a package called playwright.
+	So you eventually you have to give explicitly path to that particular module.
+	Instead what you can do is if you pass Npx then will automatically find that node module path.
+
+ npx playwright test    [If we right test here then playwright will go to playwright.config.js file and inside it run the what is written in testDir]
+    Runs the end-to-end tests.
+
+  npx playwright test --ui
+    Starts the interactive UI mode.
+
+  npx playwright test --project=chromium
+    Runs the tests only on Desktop Chrome.
+
+  npx playwright test example
+    Runs the tests in a specific file.
+
+  npx playwright test --debug
+    Runs the tests in debug mode.
+
+  npx playwright codegen
+    Auto generate tests with Codegen.
+
+We suggest that you begin by typing:
+
+    npx playwright test
+	
+
+JS is async so if we write 3 function JS will try to execute all at once which can create problem.
+To handle this use await keyword. We need to write async before the function name
+
+browser.newContext()
+	> Create new instance of the browser
+	> We can pass cookies in the parameter so that it will open new instance with passed cookies.
+
+This will create page to automate on this page we will hit the url
+context.newPage()
+
+
+
+const {test} = require('@playwright/test')
+
+If we want to create new context of the browser (If you also want to pass some cookies in it also) then use this 
+test(`Browser Context Playwright Test`, async ({browser})=> {
+    const context = await browser.newContext()
+    const page = await context.newPage()
+    await page.goto('https://rahulshettyacademy.com/loginpagepractise/')
+
+});
+
+If you want a default browser with a page then direct use "page" fixture
+test(`Page Playwright Test`, async ({page})=> {
+    await page.goto('https://rahulshettyacademy.com/loginpagepractise/')
+
+});
+
+
+PRACTISE WEBSITE:
+https://rahulshettyacademy.com/
+
+playwright.config.js 
+
+Default timeout is : 30 secs
+We reset the default timeout in playwright.config.js file >> defineConfig >>   timeout: 40 * 1000
+There are two types of timeouts:
+	Global Timeout (which is applicable to each component)
+		> timeout : 40*1000
+	Expect Timout (which is a assertion level timeout)
+		> expect : {
+			timeout : 40*1000
+			}
+Set the default brower:
+	Under the "use" tag write like this:
+		browername : "chromium"
+	Or we can tell the browser from projects object this will execute the case on all the stated browsers
+		    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+Set report format:
+	Under "defineConfig"
+		reporter: 'html'
+To run the case in headed mode by default then under use object:
+	    headless: false,
+		
+RUN CASE IN UI MODE: UI TEST RUNNER
+npx playwright test  --ui		
+		
+1. Test present in same file will execute sequencially by default
+2. If we have multiple file the both files will run parallely
+3. By default plawright will execute the case in headless mode
+4. In playwright we do not need any other testing framework like : MOCHA, CHAI or JASMINE. Playwright has builtin assertion
+5. webkit is a safari engine
+6. Playwright supports css and xpath.
+	> It is not suggested to use xpath
+	Recommended locator priority in Playwright
+		getByRole()
+		How it is used: => .getByRole("writeRolHerelike_button_forAnchorTag-Link", {name : "Shop"}) => here name is the button name or link name
+		await page.getByRole("link", {name : "Shop"}).click()
+		await page.locator(`[class="col-lg-3 col-md-6 mb-3"]`).filter({hasText : "Nokia Edge"}).getByRole("button", {name : "Add"}).click()
+		await page.locator(`[class="col-lg-3 col-md-6 mb-3"]`).filter({hasNotText : "Nokia Edge"}).first().getByRole("button").click()
+		.filter({hasText : "textHere"})It will filter out the cards that has this text then we can perform other task on it
+		.filter({hasNotText : "textHere"})   
+		
+		getByLabel()
+			    This will only work when the label text is tied up with the checkbox
+				await page.getByLabel('Check me out if you Love IceCreams!').check()
+				await page.getByLabel(`Employed`).check()
+		getByPlaceholder()
+			    await page.getByPlaceholder('Password').fill("HelloThere")
+		getByText()
+			 await page.getByText("Success! The Form has been submitted successfully!.").isVisible()
+		getByTestId()
+		CSS selectors
+		XPath (last resort)
+7. page.pause()  to pause the case
+8. To write any thing we can use .type(depricated) or .fill
+	8.1 .fill just paste your text but if you have to write text charater one by one then use
+		=>     await page.locator(`[placeholder="Select Country"]`).pressSequentially('pak')
+			    await page.locator(`[placeholder="Select Country"]`).pressSequentially('pak', {delay : 100})
+
+9. To get the text of the element : .textContent()
+	9.1 Suppose we have written something in a text field and didn't save it then the text written is not part of the DOM so we will use
+		> .inputValues() for it
+10. Some text assersion examples:    
+	const errorMsg = await page.locator(`[class="alert alert-danger col-md-12"][style="display: block;"]`).textContent()
+    await expect(page.locator(`[class="alert alert-danger col-md-12"][style="display: block;"]`)).toContainText('Incorrect')  // contain text
+    await expect(errorMsg).toBe('Incorrect username/password.') //equally verify
+    await expect(errorMsg).toContain('username/password.') //Contains text
+11. We can clear the text field
+	> .clear
+	> .fill("")
+12. If we want to clear previous text and write new then use .fill('any text') fill has ability to clear the field first then write new text
+13. To use eq like functionality use .nth(0)
+14. To get the text of each element do not need to loop it.
+	> User .allTextContents() it will return an array of text
+15. await page.waitForLoadState(`networkidle`) // It will wait untill the network tab comes to idle means all network call are been completed
+	> It is flacky it some times fails because it sees for 500 ms if there is any network call or not
+16. .waitFor() => It is used to wait untill particular locator appears. It will not work for multiple element.
+	> Before this we need add .first(), .last() or the locator should be single
+17. .toBeChecked => used for assertion
+	> isChecked() => return true or false
+		> expect(await adminCheck.isChecked()).toBeTruthy()
+		> expect(await terms.isChecked()).toBeFalsy()
+			> toBeTruthy and toBeFalsy  => these are used to make assertion. The isChecked() will return true or false this will verify the truthness or failure
+18. Where await should be written? => we will write await when we have to perform some action. So if we are just desclaring any variable then we do not need this.
+	await expect(adminCheck).toBeChecked()
+		> In this step the action is performing outside the expect
+    expect(await adminCheck.isChecked()).toBeTruthy()
+		> In this step the action is performing inside the expect
+		> We are just checking wheather it is true or false
+19. Promise Stages:
+	> pending
+	> rejected
+	> fullfilled
+
+    const [documentPage] = await Promise.all(
+    [
+    context.waitForEvent('page'),  
+    await documentLink.click()
+    ])
+    await documentPage.locator(`[class="im-para red"]`).waitFor()
+    console.log(await documentPage.locator(`[class="im-para red"]`).textContent())
+	
+//This step (context.waitForEvent('page')) will wait for an event to appear for this time the event is page new page opening. 
+But we can not add it after click as the "waitForEvent" must always be listening to the event.
+We also need to to run these two line in parallel so we have to add this in a Promise.
+Promise will make sure all steps in promise will execute parallelly and wait to complete all steps in the promise.
+The Promise returns an array. 
+	
+20. Suppose the app has some text and we need to click it so we can write it like:
+		page.locator("text='text content'")
+		or
+		page.locator("h3:has-text('text content')").isVisible()  =>> this will return true or false
+	
+21. Run case in debug mode:
+	npx playwright test CalenderHandling.spec.js --debug
+22. Generate code with CodeGen [playwright record and play tool] [Playwright inspector]
+ npx playwright codegen https://rahulshettyacademy.com/angularpractice/
+
+23. trace: collect trace of the step with complete log the goto playwright.config.js and under:
+	Use:
+		trace : 'on'
+
+test.only
+If we write this on any test in the test case file then only that case will be executed. We can add .only on multiple test at a time
+
+https://rahulshettyacademy.com/client/#/auth/login
+	saif45@gmail.com
+	Osama124534.
+
+To handle popup:
+
+    page.on("dialog", async (dialog) =>   await dialog.accept() )
+        // await dialog.dismiss()
+    await page.locator(`[id="confirmbtn"]`).click()
+
+To Handle Frame:
+const framePage = await page.frameLocator(`[id="courses-iframe"]`)
+    let emailAddress = await framePage.locator(`[class="auto-container"] [class="clearfix"] li`).first().textContent()
+    console.log(emailAddress)
+
+> beforeEach vs beforeAll
+	> beforeEach means execute the code in beforeEach block before any case in the file. It may have 4 cases
+	> beforeAll means execute the code in beforeAll block at the start once only
+
+> If we want to skip the login then we can set the login part in beforeAll() and then store the session state in json then use it in our case:
+
+test.beforeAll( async ({browser}) => {
+
+    const context = await browser.newContext()
+    const page = await context.newPage()
+    await page.goto(`https://rahulshettyacademy.com/client/#/auth/login`)
+	await page.locator(`[formcontrolname="userEmail"]`).fill(`sandy869@gmail.com`)
+    await page.locator(`[formcontrolname="userPassword"]`).fill(`Osama186934.`)    
+    await page.locator(`[value="Login"]`).click()   
+    await context.storageState({path : 'state.json'})
+    webContext = await browser.newContext({storageState : 'state.json'})
+})
+
+test("End To End Case with API", async () => {
+    const page =  await webContext.newPage()
+    await page.goto(`https://rahulshettyacademy.com/client/#/auth/login`)
+    await  page.locator(`[class="card-body"] b`).first().waitFor()
+    await page.waitForLoadState(`networkidle`)
+    console.log(await page.locator(`[class="card-body"] b`).allTextContents())
+
+})
+
+if suppose there is an issue in your api and you want to debug it. Playwrigt inspecter can not debug the apki call in the beforeAll as it will
+start debugging the actual test only.
+
+    // "uiMode" : "npx playwright test --ui",
+ Make command in package.json
+   "scripts": {
+    "test": "npx playwright test WebApi.spec.js --headed"
+  },
+ 
+ Now using keyboard:
+ Shift + Control + P => Debug: Debug npm Script
+ This will create tracses for beforeAll function also that is taking care of our api
+ 
+To check trace:
+ https://trace.playwright.dev/
+ 
+
+Listen all request and reponse made:
+
+    page.on('request', request => { console.log(request.url())}) //When ever request occur this line will listen the request.
+    page.on('response', response => { console.log(response.url(), response.status() )}) 
+
+Take Fullpage Screenshot:
+    await page.screenshot({path: 'screenshot.png'}) //Full page
+
+Take Element Screenshot:
+    await page.locator(`[id="displayed-text"]`).screenshot({path: 'partialScreenshot.png'}) //Partial page
+
+It will verify the before and afer image
+test.only("Visual Test", async ({page}) => {
+    await page.goto("https://www.google.com/")
+    expect(await page.screenshot({path: "google.png"})).toMatchSnapshot("landingPage.png")
+
+})
+
+Execute the with custom configfile
+npx playwright test ClientAppPO.spec.js --config playwright.config1.js
+
+
+npx playwright test ClientAppPO.spec.js --config playwright.config1.js --project=firefox
+
+In project tag in config file we tell on which browser the test should run and using which configs
+
+If we do not set number of workers then by default 5 workers will work in parallel
+
+
+By default the playwright we run each test one by one serially
+test.describe.configure({mode: "serial"})
+	> Suppose file has three case and 1st case got failed the it will skip next two cases
+test.describe.configure({mode: "paralel"})
+	> Suppose file has three case all three will run in parallel
+	> Assume in config file we have set only one worker then only work
+
+test.skip
+it will skip the case
+
+npx playwright test --grep "@Web"
+It will execute the case that has @Web tag
+test(`@Web Prompt Validation`, async ({page}) => {
+ })
